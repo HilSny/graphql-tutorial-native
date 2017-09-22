@@ -30,7 +30,6 @@ class App extends Component {
         ))}
       </View>
     )
-  }
-}
+  }}
 
 export default graphql(showQuery)(App)
