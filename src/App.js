@@ -5,13 +5,15 @@ import gql from 'graphql-tag'
 import {graphql} from 'react-apollo'
 
 const showQuery = gql`
-  query {
+  {
     shows {
       id
       title
     }
   }
 `
+
+
 class App extends Component {
   render() {
     const {data} = this.props
