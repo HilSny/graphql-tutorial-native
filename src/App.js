@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
-import {Text, View} from 'react-native'
+import {Text, TextInput, View} from 'react-native'
+import {compose, graphql} from 'react-apollo'
 
 import gql from 'graphql-tag'
-import {graphql} from 'react-apollo'
 
 const showQuery = gql`
   {
@@ -13,10 +13,27 @@ const showQuery = gql`
   }
 `
 
+const addShow = gql`
+  mutation addShow($title: String!){
+    addShow(title: $title) {
+      title
+    }
+  }
+`
 
 class App extends Component {
+  state={
+    text: ''
+  }
+
+  addShowToList = () => {
+    const {mutate, data: refetch} = this.props
+    mutate({variables: {title: this.state.text}})
+    refetch()
+  }
+
   render() {
-    const {data} = this.props
+    const {data, mutate} = this.props
 
     if (data.loading) {
       return <View />
@@ -24,6 +41,14 @@ class App extends Component {
 
     return (
       <View style={{alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+
+        <TextInput
+          onChangeText={(text) => this.setState({text})}
+          onSubmitEditing={this.addShowToList}
+          value={this.state.text}
+          style={{backgroundColor: '#E7EBF1', height: 40, width: '100%'}}
+        />
+
         {data.shows.map(show => (
           <View key={show.id}>
             <Text>{show.title}</Text>
@@ -34,4 +59,9 @@ class App extends Component {
     )
   }}
 
-export default graphql(showQuery)(App)
+  const enhance = compose(
+    graphql(showQuery),
+    graphql(addShow)
+  )
+
+export default enhance(App)
